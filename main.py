@@ -20,14 +20,28 @@ def create_pdf(user_logo_file, qr_code_file):
     pdf.line(x1=10, y1=pdf.h-10, x2=10, y2=10)
 
     # Add user-uploaded logo
-    pixel_to_mm = 0.79375 / 3
+    pixels_to_mm = 0.79375 / 3
     user_logo = Image.open(user_logo_file)
-    user_logo = user_logo.resize((round(200*(user_logo.width/user_logo.height)),200))
+    max_width_pixels = (pdf.w-40)/pixels_to_mm
+
+    if round(200*(user_logo.width/user_logo.height)) < max_width_pixels:
+        height_pixels = 200
+        user_logo = user_logo.resize((
+            round(200*(user_logo.width/user_logo.height)),
+            height_pixels
+        ))
+    else:
+        height_pixels = round(max_width_pixels*(user_logo.height/user_logo.width))
+        user_logo = user_logo.resize((
+            round((pdf.w-40)/pixels_to_mm),
+            height_pixels
+        ))
+
     pdf.image(
         user_logo,
-        x=(pdf.w/2)-(user_logo.width*pixel_to_mm/2),
+        x=(pdf.w/2)-(user_logo.width*pixels_to_mm/2),
         y=20,
-        h=200*pixel_to_mm
+        h=height_pixels*pixels_to_mm
     )
 
     # Add QR code
@@ -54,9 +68,9 @@ def create_pdf(user_logo_file, qr_code_file):
     canatrace_logo = canatrace_logo.resize((401, 92))
     pdf.image(
         canatrace_logo,
-        x=(pdf.w/2)-(canatrace_logo.width*pixel_to_mm/2),
+        x=(pdf.w/2)-(canatrace_logo.width*pixels_to_mm/2),
         y=230,
-        h=canatrace_logo.height*pixel_to_mm
+        h=canatrace_logo.height*pixels_to_mm
     )
 
     # Create output file
