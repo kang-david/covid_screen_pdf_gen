@@ -19,9 +19,9 @@ def create_pdf(user_logo_file, qr_code_file):
     pdf.line(x1=pdf.w-10, y1=pdf.h-10, x2=10, y2=pdf.h-10)
     pdf.line(x1=10, y1=pdf.h-10, x2=10, y2=10)
 
-    # Add user-uploaded logo
-    pixels_to_mm = 0.79375 / 3
+    # Scale & add user-uploaded logo
     user_logo = Image.open(user_logo_file)
+    pixels_to_mm = 0.79375 / 3
     max_width_pixels = (pdf.w-40)/pixels_to_mm
 
     if round(200*(user_logo.width/user_logo.height)) < max_width_pixels:
@@ -33,7 +33,7 @@ def create_pdf(user_logo_file, qr_code_file):
     else:
         height_pixels = round(max_width_pixels*(user_logo.height/user_logo.width))
         user_logo = user_logo.resize((
-            round((pdf.w-40)/pixels_to_mm),
+            round(max_width_pixels),
             height_pixels
         ))
 
